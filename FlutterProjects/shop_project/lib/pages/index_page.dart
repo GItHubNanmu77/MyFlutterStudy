@@ -18,7 +18,7 @@ class _IndexPageState extends State<IndexPage> {
     BottomNavigationBarItem(icon: Icon(CupertinoIcons.shopping_cart), title: Text("购物车")),
     BottomNavigationBarItem(icon: Icon(CupertinoIcons.person), title: Text("我的"))
   ];
-  final List tabPages = [HomePage(), CategoryPage(), CartPage(), MinePage()];
+  final List <Widget>tabPages = [HomePage(), CategoryPage(), CartPage(), MinePage()];
 
   int currentIndex = 0;
   var currentPage;
@@ -45,7 +45,10 @@ class _IndexPageState extends State<IndexPage> {
           });
         },
       ),
-      body: currentPage,
+      body: IndexedStack(
+        index: currentIndex,
+        children: tabPages,
+      )
     );
   }
 }

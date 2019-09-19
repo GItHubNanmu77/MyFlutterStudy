@@ -13,7 +13,7 @@ const String Test_Img_Url_4 =
     "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2730566803,3451839022&fm=26&gp=0.jpg";
 
 // get
-Future getRequest(url, formData) async {
+Future getRequest(url, {formData}) async {
   try {
     print("请求开始。。。。。。");
     Response response;
@@ -36,7 +36,7 @@ Future getRequest(url, formData) async {
 }
 
 // post
-Future postRequest(url, formData) async {
+Future postRequest(url, {formData}) async {
   try {
     print("请求开始。。。。。。");
     Response response;
@@ -45,7 +45,7 @@ Future postRequest(url, formData) async {
     if (formData == null) {
       response = await dio.post(servicePath[url]);
     } else {
-      response = await dio.post(servicePath[url] + '?data:formData');
+      response = await dio.post(servicePath[url], data:formData);
     }
     if (response.statusCode == 200) {
       return response.data;
@@ -59,7 +59,7 @@ Future postRequest(url, formData) async {
 }
 
 // testGetRetunData
-Future getTestRequest(url, formData, returnData) async {
+Future getTestRequest(url, {formData, returnData}) async {
  //使用统一测试URL
  url = "testUrl";
   try {
@@ -70,7 +70,35 @@ Future getTestRequest(url, formData, returnData) async {
     if (formData == null) {
       response = await dio.get(servicePath[url]);
     } else {
-      response = await dio.get(servicePath[url] + '?data:formData');
+      String parm = formData.toString();
+      response = await dio.get(servicePath[url] + '?$parm');
+    }
+    if (response.statusCode == 200) {
+      print("请求成功✅✅✅✅✅");
+      response.data = returnData;
+      return response.data;
+    } else {
+      print("接口报错❎❎❎❎❎");
+      throw Exception('后端接口出现异常，请检测代码和服务器情况.........');
+    }
+  } catch (error) {
+    return print("ERROR❌❌❌❌❌====$error");
+  }
+}
+
+// testGetRetunData
+Future postTestRequest(url, {formData, returnData}) async {
+ //使用统一测试URL
+ url = "testUrl";
+  try {
+    print("请求开始。。。。。。");
+    Response response;
+    Dio dio = new Dio();
+    dio.options.contentType = ContentType.parse("application/json");
+    if (formData == null) {
+      response = await dio.get(servicePath[url]);
+    } else {
+      response = await dio.post(servicePath[url], data:formData);
     }
     if (response.statusCode == 200) {
       print("请求成功✅✅✅✅✅");
@@ -120,5 +148,23 @@ Future getHomePageData(url, param) async {
   ];
   Map allData = {"banner": bannerData, "list": collList, "recommandDataList":recommandDataList};
 
-  return getTestRequest(url, param, allData);
+  return getTestRequest(url, formData: param, returnData: allData);
+}
+
+//热门商品
+Future getHotGoods (String url, int page){
+  List collList = [
+    {"image": Test_Img_Url_1, "title": "爱德华"},
+    {"image": Test_Img_Url_2, "title": "爱尔冯斯"},
+    {"image": Test_Img_Url_3, "title": "马斯坦古"},
+    {"image": Test_Img_Url_4, "title": "Greed Lee"},
+    {"image": Test_Img_Url_3, "title": "火王"},
+    {"image": Test_Img_Url_1, "title": "爱德华"},
+    {"image": Test_Img_Url_2, "title": "爱尔冯斯"},
+    {"image": Test_Img_Url_3, "title": "马斯坦古"},
+    {"image": Test_Img_Url_4, "title": "Greed Lee"},
+    {"image": Test_Img_Url_3, "title": "火王"}
+  ];
+   Map allData = {"data": collList};
+  return postTestRequest(url, returnData: allData);
 }
