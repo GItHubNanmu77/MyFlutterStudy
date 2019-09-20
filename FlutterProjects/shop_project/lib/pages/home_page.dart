@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:shop_project/network/network_methods.dart';
@@ -24,7 +23,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     print("homepage");
-    _getHotGoodsData(1);
+    _getHotGoodsData();
   }
 
   @override
@@ -56,6 +55,24 @@ class _HomePageState extends State<HomePage>
                   hotGoodView(),
                 ],
               ),
+              onRefresh: () async {
+                page = 1;
+                await Future.delayed(Duration(seconds: 2), () {
+                  _getHotGoodsData();
+                });
+              },
+              header: ClassicalHeader(
+                refreshText: '下拉刷新',
+                refreshingText: '刷新中...',
+                refreshedText: '刷新成功',
+                refreshReadyText: '释放刷新',
+                refreshFailedText: '刷新失败',
+              ),
+              onLoad: () async {
+                await Future.delayed(Duration(seconds: 2), () {
+                  _getHotGoodsData();
+                });
+              },
             );
           } else {
             return Center(
@@ -67,30 +84,36 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _getHotGoodsData(int page) {
+  //热门数据
+  void _getHotGoodsData() {
     getHotGoods("url", page).then((data) {
       print(data);
       List<Map> newGoodsList = (data['data'] as List).cast();
       setState(() {
-        hotGoodsList.addAll(newGoodsList);
+        if (page == 1) {
+          hotGoodsList.clear();
+          hotGoodsList.addAll(newGoodsList);
+        } else {
+          hotGoodsList.addAll(newGoodsList);
+        }
         page++;
       });
     });
   }
 
-// 火爆专区view
+// 热门专区view
   Widget hotGoodView() {
     return Container(
       child: Column(
         children: <Widget>[
-          Text('火爆转钱'),
+          hotTitle,
           _wrapList(),
         ],
       ),
     );
   }
 
-  //火爆专区标题
+  //热门专区标题
   Widget hotTitle = Container(
     margin: EdgeInsets.only(top: 10.0),
     padding: EdgeInsets.all(5.0),
@@ -101,9 +124,9 @@ class _HomePageState extends State<HomePage>
     child: Text('火爆专区'),
   );
 
-  // 流式布局
+  // 热门流式布局
   Widget _wrapList() {
-    if (hotGoodsList.length == 0) {
+    if (hotGoodsList.length != 0) {
       List<Widget> lsitWidget = hotGoodsList.map((val) {
         return InkWell(
           onTap: () {
@@ -129,7 +152,13 @@ class _HomePageState extends State<HomePage>
                 ),
                 Row(
                   children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(right: 5),
+                    ),
                     Text('￥12313'),
+                    Padding(
+                      padding: EdgeInsets.only(right: 15),
+                    ),
                     Text(
                       '￥234234',
                       style: TextStyle(
@@ -286,8 +315,9 @@ class RecommnadView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ScreenUtil.instance.setHeight(395),
+      height: ScreenUtil.instance.setHeight(300),
       margin: EdgeInsets.only(top: 10.0),
+      color: Colors.cyan[200],
       child: Column(
         children: <Widget>[
           _recommandTitle(),
