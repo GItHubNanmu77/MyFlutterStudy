@@ -8,6 +8,7 @@ import 'package:shop_project/pages/index_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
+
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
 
@@ -219,6 +220,7 @@ class CollectionView extends StatelessWidget {
       height: ScreenUtil.instance.setHeight(260),
       // padding: EdgeInsets.all(3.0),
       child: GridView.count(
+        physics: NeverScrollableScrollPhysics(),
         crossAxisCount: 5,
         // padding: EdgeInsets.all(5.0),
         children: List<Widget>.from(collDataList.map((item) {
